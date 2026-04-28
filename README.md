@@ -1,10 +1,8 @@
-# World Cup 2026: Match Odds
+# World Cup 2026: Match Odds by Eshwaree 
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://YOUR_USERNAME-world-cup-2026-dashboard.streamlit.app)
-![GitHub last commit](https://img.shields.io/github/last-commit/YOUR_USERNAME/world-cup-2026-dashboard)
-![License](https://img.shields.io/badge/license-MIT-blue)
+[![Streamlit App](https://2026fifaoddsbyemath.streamlit.app/)
 
-> **A human‑centred look at group‑stage uncertainty before the first kickoff by Eshwaree**  
+> **A human‑centred look at group‑stage uncertainty before the first kickoff**  
 > Elo‑based probabilities, storytelling, and an interactive dashboard.
 
 ---
