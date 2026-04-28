@@ -39,20 +39,3 @@ Limitations are acknowledged.
 | Plotly Express |
 
 ---
-
-## Run Locally (~2 Minutes)
-
-```bash
-# 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/world-cup-2026-dashboard.git
-cd world-cup-2026-dashboard
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Place the dataset
-# Download wc_2026_probabilities.csv from Kaggle (or use the raw URL loading method)
-# and place it in the project folder.
-
-# 4. Launch
-streamlit run app.py
