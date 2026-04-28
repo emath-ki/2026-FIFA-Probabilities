@@ -32,11 +32,11 @@ Limitations are acknowledged.
 ---
 
 ## 🛠 Tech Stack
-| Purpose | Tool |
-|---------|------|
-| **Dashboard framework** | [Streamlit](https://streamlit.io) |
-| **Data manipulation** | Pandas |
-| **Visualisation** | Plotly Express |
+| Tools |
+|------|
+| [Streamlit](https://streamlit.io) |
+| Pandas |
+| Plotly Express |
 
 ---
 
