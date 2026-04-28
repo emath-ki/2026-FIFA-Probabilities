@@ -1,6 +1,6 @@
 # World Cup 2026: Match Odds by Eshwaree 
 
-**🚀 Live Dashboard:** [worldcup2026‑odds.streamlit.app](https://2026fifaoddsbyemath.streamlit.app)
+**🚀 Live Dashboard:** [2026fifaoddsbyemath.streamlit.app](https://2026fifaoddsbyemath.streamlit.app)
 
 > **A human‑centred look at group‑stage uncertainty before the first kickoff**  
 > Elo‑based probabilities, storytelling, and an interactive dashboard.
