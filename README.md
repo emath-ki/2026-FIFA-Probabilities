@@ -7,7 +7,7 @@
 
 ---
 
-## 🎯 What It Does
+## What It Does
 
 This dashboard turns raw match probability data into a clean, scannable story.  
 Instead of numbers in a table, you get:
@@ -31,7 +31,7 @@ Limitations are acknowledged.
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 | Tools |
 |------|
 | [Streamlit](https://streamlit.io) |
@@ -40,7 +40,7 @@ Limitations are acknowledged.
 
 ---
 
-## 🚀 Run Locally (2 Minutes)
+## Run Locally (~2 Minutes)
 
 ```bash
 # 1. Clone the repo
