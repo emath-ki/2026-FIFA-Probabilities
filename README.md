@@ -15,7 +15,7 @@ Instead of numbers in a table, you get:
 - 📊 **Upset Potential by Group** — where surprises are most likely  
 - 🔄 **Competitive Balance** — the statistical “Group of Death”  
 - 🐶 **Underdog‑Friendly Groups** — where the away team has real hope  
-- 🎲 **Match‑level drill‑down** — every fixure, all three outcome probabilities  
+- 🎲 **Match‑level drill‑down** — every fixture, all three outcome probabilities  
 - 🧭 **“How to Read” Guide** — plain‑language metrics, no jargon  
 
 Everything is calculated live from a public dataset. No hard‑coded stats — the dashboard updates if the data changes.
