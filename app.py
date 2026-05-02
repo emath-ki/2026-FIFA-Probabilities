@@ -7,27 +7,27 @@ import plotly.graph_objects as go
 #  PAGE CONFIG
 # ══════════════════════════════════════════════════════════════════════════════
 st.set_page_config(
-    page_title="World Cup 2026: Win Probability & Competitive Balance",
+    page_title="World Cup 2026: Match Odds & Competitive Balance",
     page_icon="⚽",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ══════════════════════════════════════════════════════════════════════════════
-#  DESIGN TOKENS  — new brand palette
+#  DESIGN TOKENS  — dark navy glass-morphism palette
 # ══════════════════════════════════════════════════════════════════════════════
-C_BLUE      = "#304ffd"                  # primary blue — home win / positive
-C_LIME      = "#afe906"                  # lime green — draws / neutral highlights
-C_PURPLE    = "#7921a3"                  # purple — away win / alert
-C_CRIMSON   = "#61120e"                  # deep crimson — accent / alert
-C_BG        = "#0d0f1a"                  # very dark navy — page background
-C_CARD      = "#12152b"                  # card background
+C_BG        = "#1a1540"                  # very deep navy — page background
+C_NAVY      = "#2f2770"                  # primary navy — cards / sidebar
+C_GREEN     = "#318546"                  # emerald green — home win / positive
+C_TEAL      = "#6db1b3"                  # soft teal — draw / neutral
+C_MINT      = "#c4e0da"                  # pale mint — body text / labels
+C_RED       = "#c91a33"                  # crimson — away win / alert
 C_WHITE     = "#ffffff"
-C_TEXT      = "#e8eaf6"                  # near-white body text
-C_SUBTEXT   = "#c5cae9"                  # muted body text / labels
-C_GLASS_BG  = "rgba(48,79,253,0.12)"    # glassy blue card fill
-C_GLASS_BD  = "rgba(175,233,6,0.20)"    # lime glass border
-C_GLASS_SHA = "0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)"
+C_TEXT      = "#e8f4f2"                  # near-white body text
+C_SUBTEXT   = "#c4e0da"                  # mint for subtitles
+C_GLASS_BG  = "rgba(47,39,112,0.55)"    # glassy navy card fill
+C_GLASS_BD  = "rgba(109,177,179,0.25)"  # teal glass border
+C_GLASS_SHA = "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07)"
 
 FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
 PLOTLY_TEMPLATE = "plotly_dark"
@@ -42,13 +42,13 @@ html, body, [class*="css"] {{
     color: {C_TEXT};
 }}
 .stApp {{
-    background: linear-gradient(135deg, {C_BG} 0%, #080a15 60%, #0d0f1a 100%);
+    background: linear-gradient(135deg, {C_BG} 0%, #0f0d2e 60%, #1a1540 100%);
     min-height: 100vh;
 }}
 
 /* ── Sidebar ──────────────────────────────────────────────────────────────── */
 section[data-testid="stSidebar"] {{
-    background: linear-gradient(180deg, rgba(48,79,253,0.18) 0%, rgba(13,15,26,0.98) 100%) !important;
+    background: linear-gradient(180deg, rgba(47,39,112,0.95) 0%, rgba(26,21,64,0.98) 100%) !important;
     border-right: 1px solid {C_GLASS_BD};
     backdrop-filter: blur(20px);
 }}
@@ -60,17 +60,17 @@ section[data-testid="stSidebar"] .stSelectbox label {{
     font-size: 0.82rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: {C_SUBTEXT} !important;
+    color: {C_MINT} !important;
 }}
 section[data-testid="stSidebar"] [data-baseweb="select"] > div:first-child {{
-    background: rgba(48,79,253,0.15);
-    border: 1.5px solid {C_LIME} !important;
+    background: rgba(47,39,112,0.6);
+    border: 1.5px solid {C_TEAL} !important;
     border-radius: 8px;
     color: {C_TEXT};
 }}
 section[data-testid="stSidebar"] [data-baseweb="select"] > div:first-child:focus-within {{
-    border-color: {C_LIME} !important;
-    box-shadow: 0 0 0 2px rgba(175,233,6,0.25);
+    border-color: {C_MINT} !important;
+    box-shadow: 0 0 0 2px rgba(196,224,218,0.3);
 }}
 
 /* ── Metric containers ────────────────────────────────────────────────────── */
@@ -84,7 +84,7 @@ section[data-testid="stSidebar"] [data-baseweb="select"] > div:first-child:focus
     overflow: visible !important;
 }}
 [data-testid="metric-container"] label {{
-    color: {C_SUBTEXT} !important;
+    color: {C_MINT} !important;
     font-size: 0.75rem !important;
     font-weight: 600 !important;
     text-transform: uppercase;
@@ -107,7 +107,7 @@ section[data-testid="stSidebar"] [data-baseweb="select"] > div:first-child:focus
 [data-testid="metric-container"] [data-testid="stMetricDelta"] {{
     font-size: 0.82rem !important;
     white-space: normal !important;
-    color: {C_LIME} !important;
+    color: {C_TEAL} !important;
     font-style: italic;
 }}
 [data-testid="metric-container"] > div {{ overflow: visible !important; }}
@@ -120,7 +120,7 @@ h1 {{
     letter-spacing: -0.02em;
 }}
 h2, h3 {{
-    color: {C_SUBTEXT} !important;
+    color: {C_MINT} !important;
     font-weight: 500 !important;
 }}
 
@@ -161,101 +161,89 @@ except FileNotFoundError:
     st.error("❌ `wc_2026_probabilities.csv` not found. Place it alongside `app.py` and rerun.")
     st.stop()
 
-# ── Standardise column names to analytics convention ─────────────────────────
 COLUMN_MAP = {
-    "home_team":  "home_side",
-    "away_team":  "away_side",
-    "team1":      "home_side",
-    "team2":      "away_side",
-    "p_home_win": "home_win_prob",
-    "p_draw":     "draw_prob",
-    "p_away_win": "away_win_prob",
-    "home_win":   "home_win_prob",
-    "draw":       "draw_prob",
-    "away_win":   "away_win_prob",
+    "home_team":  "team1",
+    "away_team":  "team2",
+    "p_home_win": "home_win",
+    "p_draw":     "draw",
+    "p_away_win": "away_win",
 }
-df = df.rename(columns={k: v for k, v in COLUMN_MAP.items() if k in df.columns})
+df = df.rename(columns=COLUMN_MAP)
 
-REQUIRED = {"group", "home_side", "away_side", "home_win_prob", "draw_prob", "away_win_prob"}
+REQUIRED = {"group", "team1", "team2", "home_win", "draw", "away_win"}
 missing  = REQUIRED - set(df.columns)
 if missing:
     st.error(f"❌ Missing columns: **{missing}**\n\nFound: `{list(df.columns)}`")
     st.stop()
 
-PROB_COLS = ["home_win_prob", "draw_prob", "away_win_prob"]
+PROB_COLS = ["home_win", "draw", "away_win"]
 
 # ── Pre-compute aggregates ────────────────────────────────────────────────────
-# Upset Index = 1 − max outcome probability (higher = less dominant favourite)
-df["upset_index"] = 1 - df[PROB_COLS].max(axis=1)
+df["upset_score"] = 1 - df[["home_win", "draw", "away_win"]].max(axis=1)
+group_upset       = df.groupby("group")["upset_score"].mean()
+top_upset_group   = str(group_upset.idxmax())
+top_upset_val     = float(group_upset.max())
 
-group_upset_index   = df.groupby("group")["upset_index"].mean()
-top_upset_group     = str(group_upset_index.idxmax())
-top_upset_val       = float(group_upset_index.max())
+_away_means    = df.groupby("group", sort=False)["away_win"].mean()
+top_away_group = str(_away_means.idxmax())
+top_away_val   = float(_away_means.max())
 
-# Away-win probability aggregated by group
-_away_means         = df.groupby("group", sort=False)["away_win_prob"].mean()
-top_away_group      = str(_away_means.idxmax())
-top_away_val        = float(_away_means.max())
+top_draw_idx   = int(df["draw"].idxmax())
+top_draw_t1    = df.loc[top_draw_idx, "team1"]
+top_draw_t2    = df.loc[top_draw_idx, "team2"]
+top_draw_match = f"{top_draw_t1} vs {top_draw_t2}"
+top_draw_val   = float(df.loc[top_draw_idx, "draw"])
 
-# Highest single-match draw probability
-top_draw_idx        = int(df["draw_prob"].idxmax())
-top_draw_home       = df.loc[top_draw_idx, "home_side"]
-top_draw_away       = df.loc[top_draw_idx, "away_side"]
-top_draw_match      = f"{top_draw_home} vs {top_draw_away}"
-top_draw_val        = float(df.loc[top_draw_idx, "draw_prob"])
-
-# Group with highest mean draw probability (most evenly contested group)
-_draw_means         = df.groupby("group", sort=False)["draw_prob"].mean()
-tight_group         = str(_draw_means.idxmax())
-tight_pct           = f"{_draw_means.max() * 100:.1f}"
+_draw_means  = df.groupby("group", sort=False)["draw"].mean()
+tight_group  = str(_draw_means.idxmax())
+tight_pct    = f"{_draw_means.max() * 100:.1f}"
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  CHART HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 CHART_LAYOUT = dict(
     paper_bgcolor = "rgba(0,0,0,0)",
-    plot_bgcolor  = "rgba(48,79,253,0.08)",
-    font          = dict(family=FONT, color=C_SUBTEXT),
-    title_font    = dict(color=C_SUBTEXT, size=14, family=FONT),
+    plot_bgcolor  = "rgba(47,39,112,0.3)",
+    font          = dict(family=FONT, color=C_MINT),
+    title_font    = dict(color=C_MINT, size=14, family=FONT),
     xaxis         = dict(
-        gridcolor     = "rgba(175,233,6,0.15)",
+        gridcolor     = "rgba(109,177,179,0.2)",
         gridwidth     = 1,
         griddash      = "solid",
-        tickfont      = dict(color=C_SUBTEXT, size=11),
-        title_font    = dict(color=C_SUBTEXT),
+        tickfont      = dict(color=C_MINT, size=11),
+        title_font    = dict(color=C_MINT),
     ),
     yaxis         = dict(
-        gridcolor     = "rgba(175,233,6,0.15)",
+        gridcolor     = "rgba(109,177,179,0.2)",
         gridwidth     = 1,
-        tickfont      = dict(color=C_SUBTEXT, size=11),
-        title_font    = dict(color=C_SUBTEXT),
+        tickfont      = dict(color=C_MINT, size=11),
+        title_font    = dict(color=C_MINT),
     ),
     margin        = dict(l=10, r=10, t=30, b=10),
 )
 
 
 def make_gauge(value: float, label: str, color: str) -> go.Figure:
-    """Render a win-probability speedometer gauge."""
     fig = go.Figure(go.Indicator(
         mode   = "gauge+number",
         value  = value,
         number = {"suffix": "%", "font": {"size": 34, "color": C_WHITE, "family": FONT}},
-        title  = {"text": label, "font": {"size": 13, "color": C_SUBTEXT, "family": FONT}},
+        title  = {"text": label, "font": {"size": 13, "color": C_MINT, "family": FONT}},
         gauge  = {
             "axis": {
                 "range":     [0, 100],
                 "tickwidth": 1,
-                "tickcolor": "rgba(175,233,6,0.35)",
-                "tickfont":  {"color": C_SUBTEXT, "size": 9},
+                "tickcolor": "rgba(109,177,179,0.4)",
+                "tickfont":  {"color": C_MINT, "size": 9},
             },
             "bar":        {"color": color, "thickness": 0.28},
-            "bgcolor":    "rgba(48,79,253,0.2)",
+            "bgcolor":    "rgba(47,39,112,0.4)",
             "borderwidth": 1,
-            "bordercolor": "rgba(175,233,6,0.25)",
+            "bordercolor": "rgba(109,177,179,0.3)",
             "steps": [
-                {"range": [0,  33], "color": "rgba(48,79,253,0.12)"},
-                {"range": [33, 66], "color": "rgba(175,233,6,0.10)"},
-                {"range": [66, 100],"color": "rgba(121,33,163,0.12)"},
+                {"range": [0,  33], "color": "rgba(49,133,70,0.15)"},
+                {"range": [33, 66], "color": "rgba(109,177,179,0.15)"},
+                {"range": [66, 100],"color": "rgba(201,26,51,0.15)"},
             ],
             "threshold": {
                 "line":      {"color": color, "width": 3},
@@ -281,46 +269,47 @@ with st.sidebar:
     st.markdown(
         f"<h2 style='color:{C_WHITE};font-size:1.3rem;font-weight:700;"
         f"margin-bottom:2px;'>⚽ World Cup 2026</h2>"
-        f"<p style='color:{C_LIME};font-size:0.85rem;margin-top:0;'>"
-        f"Win Probability &amp; Competitive Balance</p>",
+        f"<p style='color:{C_TEAL};font-size:0.85rem;margin-top:0;'>"
+        f"Match Odds &amp; Competitive Balance</p>",
         unsafe_allow_html=True,
     )
 
     st.divider()
 
-    # ── MATCH SELECTOR ───────────────────────────────────────────────────────
+    # ── MATCH INSPECTOR ──────────────────────────────────────────────────────
     st.markdown(
         f"<p style='color:{C_WHITE};font-size:0.82rem;font-weight:700;"
         f"text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;'>"
-        f"🔍 Match Selector</p>",
+        f"🔍 Match Inspector</p>",
         unsafe_allow_html=True,
     )
 
-    match_labels     = (df["home_side"] + " vs " + df["away_side"]).tolist()
-    sel_match_label  = st.selectbox("Pick a match", options=match_labels, index=0)
+    # ALL matches (no group filtering here)
+    match_labels = (df["team1"] + " vs " + df["team2"]).tolist()
+    sel_match_label = st.selectbox("Pick a match", options=match_labels, index=0)
 
     st.divider()
 
-    # ── UPSET INDEX RANKING ──────────────────────────────────────────────────
+    # ── UPSET POTENTIAL ──────────────────────────────────────────────────────
     st.markdown(
         f"<p style='color:{C_WHITE};font-size:0.82rem;font-weight:700;"
         f"text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;'>"
-        f"🎲 Upset Index by Group</p>",
+        f"🎲 Expected Upset Rate</p>",
         unsafe_allow_html=True,
     )
 
     upset_ranking = (
-        group_upset_index.sort_values(ascending=False)
+        group_upset.sort_values(ascending=False)
         .reset_index()
-        .rename(columns={"group": "Group", "upset_index": "Upset Index"})
+        .rename(columns={"group": "Group", "upset_score": "Score"})
     )
-    upset_ranking["Upset Index"] = upset_ranking["Upset Index"].map("{:.1%}".format)
+    upset_ranking["Score"] = upset_ranking["Score"].map("{:.1%}".format)
 
     st.dataframe(upset_ranking, hide_index=True, use_container_width=True)
 
     st.divider()
 
-    # ── GROUP FILTER ─────────────────────────────────────────────────────────
+    # ── GROUP PICKER (ONLY HERE) ─────────────────────────────────────────────
     groups    = sorted(df["group"].unique())
     sel_group = st.selectbox("Pick a group", options=groups, index=0)
 
@@ -328,15 +317,15 @@ with st.sidebar:
 
     # ── CONTEXT TEXT ─────────────────────────────────────────────────────────
     st.markdown(
-        f"<p style='color:{C_SUBTEXT};font-size:0.72rem;font-style:italic;"
+        f"<p style='color:{C_MINT};font-size:0.72rem;font-style:italic;"
         f"line-height:1.5;margin-top:4px;'>"
-        f"Win probabilities derived from a public Elo-based model.</p>",
+        f"Probabilities are derived from a public Elo-based model. ",
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        f"<p style='color:{C_LIME};font-size:0.68rem;margin-top:6px;'>"
-        f"Data: wc_2026_probabilities.csv &nbsp;·&nbsp; {len(df):,} fixtures</p>",
+        f"<p style='color:{C_TEAL};font-size:0.68rem;margin-top:6px;'>"
+        f"Data: wc_2026_probabilities.csv &nbsp;·&nbsp; {len(df):,} rows</p>",
         unsafe_allow_html=True,
     )
 
@@ -347,6 +336,7 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
 
+    
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  TABS
@@ -354,6 +344,7 @@ with st.sidebar:
 tab1, tab2 = st.tabs(["Main Dashboard", "Data Guide"])
 
 with tab1:
+
 
     # ── Header: title/narrative (left) + image (right) ───────────────────────
     import os
@@ -365,9 +356,9 @@ with tab1:
         st.markdown(
             f"<h1 style='color:{C_WHITE};font-weight:700;font-size:2.5rem;"
             f"letter-spacing:-0.02em;margin-bottom:4px;'>World Cup 2026</h1>"
-            f"<p style='color:{C_LIME};font-size:1.1rem;font-style:italic;"
+            f"<p style='color:{C_TEAL};font-size:1.1rem;font-style:italic;"
             f"font-weight:400;margin-top:0;margin-bottom:28px;'>"
-            f"Win probability &amp; competitive balance across every group fixture</p>",
+            f"Explore every group's match odds &amp; more in one living view</p>",
             unsafe_allow_html=True,
         )
         # Narrative summary block
@@ -376,7 +367,7 @@ with tab1:
             <div style="
                 margin: 0 0 36px 0;
                 padding: 20px 24px;
-                border-left: 4px solid {C_LIME};
+                border-left: 4px solid {C_TEAL};
                 background: {C_GLASS_BG};
                 border-radius: 0 12px 12px 0;
                 box-shadow: {C_GLASS_SHA};
@@ -387,35 +378,41 @@ with tab1:
                 color: {C_TEXT};
             ">
                 The 2026 World Cup group stage features
-                <strong style="color:{C_WHITE}">{len(df)} fixtures</strong>
+                <strong style="color:{C_WHITE}">{len(df)} matches</strong>
                 across <strong style="color:{C_WHITE}">{df["group"].nunique()} groups</strong>.
-                Group&nbsp;<span style="color:{C_LIME};font-weight:600;">{top_away_group}</span>
+                Group&nbsp;<span style="color:{C_TEAL};font-weight:600;">{top_away_group}</span>
                 carries the highest away-win probability:
-                <span style="color:{C_LIME};font-weight:600;">{top_away_val*100:.1f}%</span> on average.
-                Group&nbsp;<span style="color:{C_BLUE};font-weight:600;">{tight_group}</span>
-                is the most evenly contested, with
-                <span style="color:{C_BLUE};font-weight:600;">{tight_pct}%</span>
-                of its fixtures projected to end level.
-                The match with the narrowest probability margin?
-                <span style="font-weight:600;color:{C_WHITE}">{top_draw_home} vs {top_draw_away}</span>;
-                draw probability sits at
-                <span style="color:{C_PURPLE};font-weight:600;">{top_draw_val*100:.1f}%</span>.
+                <span style="color:{C_TEAL};font-weight:600;">{top_away_val*100:.1f}%</span> on average.
+                Group&nbsp;<span style="color:{C_GREEN};font-weight:600;">{tight_group}</span>
+                is the most tightly contested, with
+                <span style="color:{C_GREEN};font-weight:600;">{tight_pct}%</span>
+                of its matches likely to end level.
+                The match with the slimmest margins?
+                <span style="font-weight:600;color:{C_WHITE}">{top_draw_t1} vs {top_draw_t2}</span>;
+                where even a draw sits at
+                <span style="color:{C_RED};font-weight:600;">{top_draw_val*100:.1f}%</span>.
             </div>
             """,
             unsafe_allow_html=True,
         )
 
     with _header_right:
+        # Resolve image relative to this script's directory so any absolute
+        # path in the working folder works regardless of where the user is.
         _img_name = "e97b939610c0b9fbd9d1b2bbcebdd2a2.jpg"
         _img_path = Path(__file__).parent / _img_name
         if _img_path.exists():
-            st.image(str(_img_path), use_container_width=True)
+            st.image(
+                str(_img_path),
+                use_container_width=True,
+            )
         else:
+            # Fallback: try the bare filename (works when CWD == app dir)
             if os.path.exists(_img_name):
                 st.image(_img_name, use_container_width=True)
             else:
                 st.markdown(
-                    f"<p style='color:{C_LIME};font-size:0.75rem;font-style:italic;"
+                    f"<p style='color:{C_TEAL};font-size:0.75rem;font-style:italic;"
                     f"text-align:center;padding-top:60px;'>"
                     f"Image not found.<br>{_img_name}</p>",
                     unsafe_allow_html=True,
@@ -434,7 +431,7 @@ with tab1:
     m1, m2, m3 = st.columns(3)
 
     m1.metric(
-        "Group Stage Fixtures",
+        "Group Stage Matches",
         f"{len(df)}",
         delta=f"across {df['group'].nunique()} groups",
     )
@@ -444,13 +441,13 @@ with tab1:
             f"""<div style="background:{C_GLASS_BG};border:1px solid {C_GLASS_BD};
                 border-radius:16px;padding:20px 22px 16px 22px;
                 box-shadow:{C_GLASS_SHA};backdrop-filter:blur(12px);
-                border-left:4px solid {C_PURPLE};">
-                <p style="color:{C_SUBTEXT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
+                border-left:4px solid {C_RED};">
+                <p style="color:{C_MINT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
                           letter-spacing:0.5px;margin:0 0 6px 0;">Away-Favoured Group</p>
                 <p style="color:{C_WHITE};font-size:2.0rem;font-weight:700;margin:0 0 4px 0;
                           line-height:1.1;">Group {top_away_group}</p>
-                <p style="color:{C_PURPLE};font-size:0.88rem;font-style:italic;margin:0;">
-                    {top_away_val*100:.1f}% mean away-win probability</p>
+                <p style="color:{C_RED};font-size:0.88rem;font-style:italic;margin:0;">
+                    {top_away_val*100:.1f}% avg away-win probability</p>
             </div>""",
             unsafe_allow_html=True,
         )
@@ -460,13 +457,13 @@ with tab1:
             f"""<div style="background:{C_GLASS_BG};border:1px solid {C_GLASS_BD};
                 border-radius:16px;padding:20px 22px 16px 22px;
                 box-shadow:{C_GLASS_SHA};backdrop-filter:blur(12px);
-                border-left:4px solid {C_CRIMSON};">
-                <p style="color:{C_SUBTEXT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
-                          letter-spacing:0.5px;margin:0 0 6px 0;">Highest Upset Index Group</p>
+                border-left:4px solid {C_RED};">
+                <p style="color:{C_MINT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
+                          letter-spacing:0.5px;margin:0 0 6px 0;">Most Unpredictable Group</p>
                 <p style="color:{C_WHITE};font-size:2.0rem;font-weight:700;margin:0 0 4px 0;
                           line-height:1.1;">Group {top_upset_group}</p>
-                <p style="color:{C_CRIMSON};font-size:0.88rem;font-style:italic;margin:0;">
-                    {top_upset_val*100:.1f}% mean upset index</p>
+                <p style="color:{C_RED};font-size:0.88rem;font-style:italic;margin:0;">
+                    {top_upset_val*100:.1f}% avg upset score</p>
             </div>""",
             unsafe_allow_html=True,
         )
@@ -479,13 +476,13 @@ with tab1:
             f"""<div style="background:{C_GLASS_BG};border:1px solid {C_GLASS_BD};
                 border-radius:16px;padding:20px 22px 16px 22px;
                 box-shadow:{C_GLASS_SHA};backdrop-filter:blur(12px);
-                border-left:4px solid {C_BLUE};">
-                <p style="color:{C_SUBTEXT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
-                          letter-spacing:0.5px;margin:0 0 6px 0;">Highest Draw-Probability Group</p>
+                border-left:4px solid {C_GREEN};">
+                <p style="color:{C_MINT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
+                          letter-spacing:0.5px;margin:0 0 6px 0;">Most Draw-Likely Group</p>
                 <p style="color:{C_WHITE};font-size:2.0rem;font-weight:700;margin:0 0 4px 0;
                           line-height:1.1;">Group {tight_group}</p>
-                <p style="color:{C_BLUE};font-size:0.88rem;font-style:italic;margin:0;">
-                    {tight_pct}% mean draw probability</p>
+                <p style="color:{C_GREEN};font-size:0.88rem;font-style:italic;margin:0;">
+                    {tight_pct}% avg draw probability</p>
             </div>""",
             unsafe_allow_html=True,
         )
@@ -495,12 +492,12 @@ with tab1:
             f"""<div style="background:{C_GLASS_BG};border:1px solid {C_GLASS_BD};
                 border-radius:16px;padding:20px 22px 16px 22px;
                 box-shadow:{C_GLASS_SHA};backdrop-filter:blur(12px);
-                border-left:4px solid {C_LIME};">
-                <p style="color:{C_SUBTEXT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
-                          letter-spacing:0.5px;margin:0 0 6px 0;">Highest Single-Fixture Draw Prob.</p>
+                border-left:4px solid {C_TEAL};">
+                <p style="color:{C_MINT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
+                          letter-spacing:0.5px;margin:0 0 6px 0;">Highest Draw Match</p>
                 <p style="color:{C_WHITE};font-size:1.15rem;font-weight:700;margin:0 0 4px 0;
-                          line-height:1.3;">{top_draw_home}<br>vs {top_draw_away}</p>
-                <p style="color:{C_LIME};font-size:0.88rem;font-style:italic;margin:0;">
+                          line-height:1.3;">{top_draw_t1}<br>vs {top_draw_t2}</p>
+                <p style="color:{C_TEAL};font-size:0.88rem;font-style:italic;margin:0;">
                     {top_draw_val*100:.1f}% draw probability</p>
             </div>""",
             unsafe_allow_html=True,
@@ -511,13 +508,13 @@ with tab1:
             f"""<div style="background:{C_GLASS_BG};border:1px solid {C_GLASS_BD};
                 border-radius:16px;padding:20px 22px 16px 22px;
                 box-shadow:{C_GLASS_SHA};backdrop-filter:blur(12px);
-                border-left:4px solid {C_LIME};">
-                <p style="color:{C_SUBTEXT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
+                border-left:4px solid {C_TEAL};">
+                <p style="color:{C_MINT};font-size:0.75rem;font-weight:600;text-transform:uppercase;
                           letter-spacing:0.5px;margin:0 0 6px 0;">Total Groups</p>
                 <p style="color:{C_WHITE};font-size:2.0rem;font-weight:700;margin:0 0 4px 0;
                           line-height:1.1;">{df["group"].nunique()}</p>
-                <p style="color:{C_LIME};font-size:0.88rem;font-style:italic;margin:0;">
-                    Groups A – {sorted(df["group"].unique())[-1]} · 6 fixtures each</p>
+                <p style="color:{C_TEAL};font-size:0.88rem;font-style:italic;margin:0;">
+                    Groups A – {sorted(df["group"].unique())[-1]} · 6 matches each</p>
             </div>""",
             unsafe_allow_html=True,
         )
@@ -525,40 +522,23 @@ with tab1:
     st.divider()
 
     # ══════════════════════════════════════════════════════════════════════════════
-    #  SECTION 1 — MATCH INSPECTOR (gauges first, probability bars below)
+    #  SECTION 1 — MATCH INSPECTOR  (tiles first, speedometers directly below)
     # ══════════════════════════════════════════════════════════════════════════════
     st.markdown(
         f"<h2 style='color:{C_WHITE};font-size:1.5rem;font-weight:600;margin-bottom:4px;'>"
-        f"🔍 Match Probability Breakdown — {sel_match_label}</h2>",
+        f"🔍 Match Inspector — {sel_match_label}</h2>",
         unsafe_allow_html=True,
     )
 
-    _home, _away  = sel_match_label.split(" vs ", 1)
-    match_row     = df[(df["home_side"] == _home) & (df["away_side"] == _away)].iloc[0]
+    _t1, _t2  = sel_match_label.split(" vs ", 1)
+    match_row = df[(df["team1"] == _t1) & (df["team2"] == _t2)].iloc[0]
 
-    _home_prob = float(match_row["home_win_prob"]) * 100
-    _draw_prob = float(match_row["draw_prob"])     * 100
-    _away_prob = float(match_row["away_win_prob"]) * 100
+    _home_val = float(match_row["home_win"]) * 100
+    _draw_val = float(match_row["draw"])     * 100
+    _away_val = float(match_row["away_win"]) * 100
 
-    # — Probability gauges —
-    sp1, sp2, sp3 = st.columns(3)
-    with sp1:
-        st.plotly_chart(
-            make_gauge(_home_prob, f"🏠 Home Win — {_home}", C_BLUE),
-            use_container_width=True, config={"displayModeBar": False},
-        )
-    with sp2:
-        st.plotly_chart(
-            make_gauge(_draw_prob, "🤝 Draw Probability", C_LIME),
-            use_container_width=True, config={"displayModeBar": False},
-        )
-    with sp3:
-        st.plotly_chart(
-            make_gauge(_away_prob, f"✈️ Away Win — {_away}", C_PURPLE),
-            use_container_width=True, config={"displayModeBar": False},
-        )
 
-    # — Probability bar tiles —
+    # ── Probability tiles ─────────────────────────────────────────────────────────
     def prob_card(team_label: str, outcome: str, pct: float, color: str) -> str:
         bar_w = f"{pct:.1f}%"
         return f"""
@@ -571,33 +551,56 @@ with tab1:
             backdrop-filter: blur(16px);
             border-top: 4px solid {color};
         ">
-            <p style="color:{C_SUBTEXT};font-size:0.72rem;font-weight:600;text-transform:uppercase;
+            <p style="color:{C_MINT};font-size:0.72rem;font-weight:600;text-transform:uppercase;
                       letter-spacing:0.6px;margin:0 0 4px 0;">{team_label}</p>
             <p style="color:{C_WHITE};font-size:2.2rem;font-weight:700;margin:0 0 8px 0;
                       line-height:1;">{pct:.1f}<span style="font-size:1rem;font-weight:400;">%</span></p>
             <p style="color:{C_SUBTEXT};font-size:0.8rem;margin:0 0 10px 0;">{outcome}</p>
-            <div style="background:rgba(255,255,255,0.08);border-radius:99px;height:6px;overflow:hidden;">
+            <div style="background:rgba(255,255,255,0.1);border-radius:99px;height:6px;overflow:hidden;">
                 <div style="width:{bar_w};height:100%;background:{color};border-radius:99px;"></div>
             </div>
         </div>"""
 
+    # — Speedometer gauges (directly below the tiles) —
+    st.markdown(
+        f"<p style='color:{C_MINT};font-size:0.82rem;font-weight:600;"
+        f"text-transform:uppercase;letter-spacing:0.05em;margin:18px 0 0 0;'>"
+        f"</p>",
+        unsafe_allow_html=True,
+    )
+    sp1, sp2, sp3 = st.columns(3)
+    with sp1:
+        st.plotly_chart(
+            make_gauge(_home_val, f"🏠Home Win : {_t1}", C_GREEN),
+            use_container_width=True, config={"displayModeBar": False},
+        )
+    with sp2:
+        st.plotly_chart(
+            make_gauge(_draw_val, "🤝 Draw", C_TEAL),
+            use_container_width=True, config={"displayModeBar": False},
+        )
+    with sp3:
+        st.plotly_chart(
+            make_gauge(_away_val, f"✈️Away Win : {_t2} ", C_RED),
+            use_container_width=True, config={"displayModeBar": False},
+        )
+
+
+
+    # — Tiles row —
     g1, g2, g3 = st.columns(3)
     with g1:
-        st.markdown(prob_card(f"🏠 {_home}", "Home Win Probability", _home_prob, C_BLUE), unsafe_allow_html=True)
+        st.markdown(prob_card(f"🏠 {_t1}", "Home Win", _home_val, C_GREEN), unsafe_allow_html=True)
     with g2:
-        st.markdown(prob_card("🤝 Draw", "Neither side wins", _draw_prob, C_LIME), unsafe_allow_html=True)
+        st.markdown(prob_card("🤝 Draw", "Neither side wins", _draw_val, C_TEAL), unsafe_allow_html=True)
     with g3:
-        st.markdown(prob_card(f"✈️ {_away}", "Away Win Probability", _away_prob, C_PURPLE), unsafe_allow_html=True)
+        st.markdown(prob_card(f"✈️ {_t2}", "Away Win", _away_val, C_RED), unsafe_allow_html=True)
 
-    # — Most probable outcome banner —
-    _outcome_map = {
-        "Home Win": (_home_prob, C_BLUE),
-        "Draw":     (_draw_prob, C_LIME),
-        "Away Win": (_away_prob, C_PURPLE),
-    }
-    _dom           = max(_outcome_map, key=lambda k: _outcome_map[k][0])
+    # Dominant outcome banner
+    _outcome_map = {"Home Win": (_home_val, C_GREEN), "Draw": (_draw_val, C_TEAL), "Away Win": (_away_val, C_RED)}
+    _dom         = max(_outcome_map, key=lambda k: _outcome_map[k][0])
     _dom_val, _dom_color = _outcome_map[_dom]
-    _icons         = {"Home Win": "🏠", "Draw": "🤝", "Away Win": "✈️"}
+    _icons       = {"Home Win": "🏠", "Draw": "🤝", "Away Win": "✈️"}
     st.markdown(
         f"""
         <div style="
@@ -612,8 +615,8 @@ with tab1:
             backdrop-filter: blur(12px);
             box-shadow: {C_GLASS_SHA};
         ">
-            <span style="color:{C_SUBTEXT};font-size:0.7rem;text-transform:uppercase;
-                         letter-spacing:0.6px;font-weight:600;">Most probable outcome</span><br>
+            <span style="color:{C_MINT};font-size:0.7rem;text-transform:uppercase;
+                         letter-spacing:0.6px;font-weight:600;">Most likely outcome</span><br>
             <span style="color:{_dom_color};font-size:1.3rem;font-weight:700;">
                 {_icons[_dom]}&nbsp;{_dom} &mdash; {_dom_val:.1f}%
             </span>
@@ -622,18 +625,19 @@ with tab1:
         unsafe_allow_html=True,
     )
 
+
+
     # ══════════════════════════════════════════════════════════════════════════════
     #  SECTION 2 — CHARTS
     # ══════════════════════════════════════════════════════════════════════════════
     chart_col1, chart_col2 = st.columns([3, 2], gap="large")
-
     with chart_col1:
         st.divider()
         st.markdown(
             f"<h3 style='color:{C_WHITE};font-size:1.05rem;font-weight:600;margin-bottom:2px;'>"
-            f"Win Probability Distribution by Group</h3>"
-            f"<p style='color:{C_LIME};font-size:0.8rem;margin-top:0;margin-bottom:8px;'>"
-            f"Mean outcome probability per group — home win · draw · away win</p>",
+            f"The Favourites, the Draws, and the Long Shots</h3>"
+            f"<p style='color:{C_TEAL};font-size:0.8rem;margin-top:0;margin-bottom:8px;'>"
+            f"Average outcome probability per group</p>",
             unsafe_allow_html=True,
         )
         group_avg = (
@@ -642,23 +646,21 @@ with tab1:
             .reset_index()
             .melt(id_vars="group", var_name="Outcome", value_name="Probability")
         )
-        group_avg["Outcome"] = group_avg["Outcome"].map({
-            "home_win_prob": "Home Win",
-            "draw_prob":     "Draw",
-            "away_win_prob": "Away Win",
-        })
+        group_avg["Outcome"] = group_avg["Outcome"].map(
+            {"home_win": "Home Win", "draw": "Draw", "away_win": "Away Win"}
+        )
         fig_bar = px.bar(
             group_avg, x="Probability", y="group", color="Outcome",
             orientation="h", barmode="group",
-            color_discrete_map={"Home Win": C_BLUE, "Draw": C_LIME, "Away Win": C_PURPLE},
+            color_discrete_map={"Home Win": C_GREEN, "Draw": C_TEAL, "Away Win": C_RED},
             template=PLOTLY_TEMPLATE,
-            labels={"group": "Group", "Probability": "Mean Probability"},
+            labels={"group": "Group", "Probability": "Avg Probability"},
             text_auto=".1%",
         )
         fig_bar.update_layout(
             height=440,
             legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="right", x=1,
-                        font=dict(color=C_SUBTEXT, size=11)),
+                        font=dict(color=C_MINT, size=11)),
             xaxis_tickformat=".0%",
             **CHART_LAYOUT,
         )
@@ -669,40 +671,35 @@ with tab1:
         st.divider()
         st.markdown(
             f"<h3 style='color:{C_WHITE};font-size:1.05rem;font-weight:600;margin-bottom:2px;'>"
-            f"Competitive Balance Index by Group</h3>"
-            f"<p style='color:{C_LIME};font-size:0.8rem;margin-top:0;margin-bottom:8px;'>"
-            f"Balance score · colour = mean away-win probability</p>",
+            f"Where the Uncertainty Lives</h3>"
+            f"<p style='color:{C_TEAL};font-size:0.8rem;margin-top:0;margin-bottom:8px;'>"
+            f"Within-Group Competitive Parity Score · colour = avg away-win</p>",
             unsafe_allow_html=True,
         )
-        # Competitive Balance Index = 1 − σ(home_win_prob) within group
-        # Higher score → more equal home/away strength → more competitive group
         bal_df = (
             df.groupby("group")
-            .agg(
-                competitive_balance=("home_win_prob", lambda x: 1 - x.std()),
-                mean_away_win_prob=("away_win_prob", "mean"),
-            )
+            .agg(balance=("home_win", lambda x: 1 - x.std()), avg_away=("away_win", "mean"))
             .reset_index()
-            .sort_values("competitive_balance", ascending=True)
+            .sort_values("balance", ascending=True)
         )
         fig_bal = px.bar(
-            bal_df, x="competitive_balance", y="group", orientation="h",
-            color="mean_away_win_prob",
-            color_continuous_scale=[C_BLUE, C_LIME, C_PURPLE],
+            bal_df, x="balance", y="group", orientation="h",
+            color="avg_away",
+            color_continuous_scale=[C_GREEN, C_TEAL, C_RED],
             template=PLOTLY_TEMPLATE,
             labels={
-                "competitive_balance":  "Competitive Balance Index (higher = more equal)",
-                "group":                "Group",
-                "mean_away_win_prob":   "Mean Away-Win Prob.",
+                "balance":  "Balance (higher = more competitive)",
+                "group":    "Group",
+                "avg_away": "Avg Away-Win",
             },
             text_auto=".2f",
         )
         fig_bal.update_layout(
             height=440,
             coloraxis_colorbar=dict(
-                title="Mean<br>Away-Win", tickformat=".0%", thickness=10, len=0.65,
-                title_font=dict(color=C_SUBTEXT, size=11),
-                tickfont=dict(color=C_SUBTEXT),
+                title="Avg<br>Away-Win", tickformat=".0%", thickness=10, len=0.65,
+                title_font=dict(color=C_MINT, size=11),
+                tickfont=dict(color=C_MINT),
             ),
             **CHART_LAYOUT,
         )
@@ -712,24 +709,24 @@ with tab1:
     st.divider()
 
     # ══════════════════════════════════════════════════════════════════════════════
-    #  SECTION 3 — UPSET INDEX
+    #  SECTION 3 — Expected Upset Rate (by group)
     # ══════════════════════════════════════════════════════════════════════════════
     st.markdown(
         f"<h3 style='color:{C_WHITE};font-size:1.05rem;font-weight:600;margin-bottom:2px;'>"
-        f"🎲 Upset Index by Group</h3>"
-        f"<p style='color:{C_LIME};font-size:0.8rem;margin-top:0;margin-bottom:8px;'>"
-        f"Upset Index = 1 − max(home_win_prob, draw_prob, away_win_prob) &nbsp;·&nbsp; higher = no dominant outcome</p>",
+        f"🎲 Expected Upset Rate (by group)</h3>"
+        f"<p style='color:{C_TEAL};font-size:0.8rem;margin-top:0;margin-bottom:8px;'>"
+        f"Upset score = 1 − max(home_win, draw, away_win) · higher = no outcome dominates</p>",
         unsafe_allow_html=True,
     )
     upset_chart_df = (
-        group_upset_index.reset_index()
-        .rename(columns={"group": "Group", "upset_index": "Upset Index"})
-        .sort_values("Upset Index", ascending=True)
+        group_upset.reset_index()
+        .rename(columns={"group": "Group", "upset_score": "Upset Score"})
+        .sort_values("Upset Score", ascending=True)
     )
     fig_upset = px.bar(
-        upset_chart_df, x="Upset Index", y="Group", orientation="h",
-        template=PLOTLY_TEMPLATE, color="Upset Index",
-        color_continuous_scale=[C_BLUE, C_LIME, C_PURPLE],
+        upset_chart_df, x="Upset Score", y="Group", orientation="h",
+        template=PLOTLY_TEMPLATE, color="Upset Score",
+        color_continuous_scale=[C_GREEN, C_TEAL, C_RED],
         text_auto=".1%",
     )
     fig_upset.update_layout(
@@ -744,40 +741,28 @@ with tab1:
     st.divider()
 
     # ══════════════════════════════════════════════════════════════════════════════
-    #  SECTION 4 — GROUP FIXTURE TABLE
+    #  SECTION 4 — GROUP DETAIL TABLE
     # ══════════════════════════════════════════════════════════════════════════════
     st.markdown(
         f"<h3 style='color:{C_WHITE};font-size:1.05rem;font-weight:600;margin-bottom:4px;'>"
-        f"📋 Group {sel_group} — All Fixtures</h3>",
+        f"📋 Group {sel_group} — All Matches</h3>",
         unsafe_allow_html=True,
     )
 
-    filtered   = df[df["group"] == sel_group].copy()
-    extra_cols = [c for c in ["date", "tournament", "elo_diff", "home_injury_flag", "away_injury_flag"]
-                  if c in filtered.columns]
-    display_cols = ["home_side", "away_side"] + extra_cols + PROB_COLS + ["upset_index"]
+    filtered     = df[df["group"] == sel_group].copy()
+    extra_cols   = [c for c in ["date", "tournament", "elo_diff", "home_injury_flag", "away_injury_flag"]
+                    if c in filtered.columns]
+    display_cols = ["team1", "team2"] + extra_cols + PROB_COLS + ["upset_score"]
 
     display_df = filtered[display_cols].copy()
-    for col in PROB_COLS + ["upset_index"]:
+    for col in PROB_COLS + ["upset_score"]:
         display_df[col] = display_df[col].map("{:.1%}".format)
 
-    # Human-readable column headers
-    display_df = display_df.rename(columns={
-        "home_side":      "Home Side",
-        "away_side":      "Away Side",
-        "home_win_prob":  "Home Win Prob.",
-        "draw_prob":      "Draw Prob.",
-        "away_win_prob":  "Away Win Prob.",
-        "upset_index":    "Upset Index",
-        "elo_diff":       "Elo Differential",
-    })
-    display_df.columns = [c.replace("_", " ").title() if c not in display_df.columns else c
-                          for c in display_df.columns]
-
+    display_df.columns = [c.replace("_", " ").title() for c in display_df.columns]
     st.dataframe(display_df, use_container_width=True, hide_index=True)
     st.markdown(
-        f"<p style='color:{C_LIME};font-size:0.78rem;margin-top:4px;'>"
-        f"{len(filtered)} fixture(s) in Group {sel_group}</p>",
+        f"<p style='color:{C_TEAL};font-size:0.78rem;margin-top:4px;'>"
+        f"{len(filtered)} match(es) in Group {sel_group}</p>",
         unsafe_allow_html=True,
     )
 
@@ -786,9 +771,9 @@ with tab1:
         f"""
         <div style="margin-top:48px;padding-top:16px;
                     border-top:1px solid {C_GLASS_BD};text-align:center;">
-            <p style="color:{C_LIME};font-size:0.75rem;margin:0;">
-                Built with public data &nbsp;·&nbsp; Elo-based win probabilities
-                &nbsp;·&nbsp; by Eshwaree Mathanki
+            <p style="color:{C_TEAL};font-size:0.75rem;margin:0;">
+                Built with public data &nbsp;·&nbsp; &nbsp;·&nbsp; Just probabilities
+                by Eshwaree Mathanki
             </p>
         </div>
         """,
@@ -796,16 +781,16 @@ with tab1:
     )
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  TAB 2 — DATA GUIDE
-# ══════════════════════════════════════════════════════════════════════════════
 with tab2:
+    # ══════════════════════════════════════════════════════════════════════════
+    #  DATA GUIDE
+    # ══════════════════════════════════════════════════════════════════════════
 
     # ── Hero ──────────────────────────────────────────────────────────────────
     st.markdown(
         f"""
         <div style="text-align:center;padding:40px 0 8px 0;">
-            <p style="color:{C_SUBTEXT};font-size:0.78rem;font-weight:600;
+            <p style="color:{C_MINT};font-size:0.78rem;font-weight:600;
                       text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;">
                 Reference
             </p>
@@ -813,9 +798,10 @@ with tab2:
                        letter-spacing:-0.02em;margin:0 0 10px 0;">
                 How to Read This Dashboard
             </h2>
-            <p style="color:{C_LIME};font-size:1.05rem;font-weight:400;
+            <p style="color:{C_TEAL};font-size:1.05rem;font-weight:400;
                       max-width:560px;margin:0 auto 32px auto;line-height:1.55;">
-                Plain-language definitions for every metric — with formulae where they help.
+                A quick guide to the five metrics that power every chart,
+                number, and story you see.
             </p>
         </div>
         """,
@@ -829,119 +815,103 @@ with tab2:
             max-width:680px;margin:0 auto 36px auto;
             padding:20px 26px;
             background:{C_GLASS_BG};
-            border-left:4px solid {C_LIME};
+            border-left:4px solid {C_TEAL};
             border-radius:0 12px 12px 0;
             box-shadow:{C_GLASS_SHA};
             backdrop-filter:blur(12px);
             font-size:0.97rem;color:{C_TEXT};line-height:1.65;
         ">
-            This dashboard converts Elo ratings into match probabilities and layers them
-            into three analytical questions: <em>Who is the favourite?</em>
-            <em>How open is the contest?</em> <em>Where are upsets most likely?</em>
-            Each term below is defined in plain language, with a formula and a pointer
-            to where you'll find it on the main dashboard.
+            This dashboard doesn't just show raw odds — it layers Elo‑based
+            probabilities into three ideas: who's the favourite, how tight the
+            match is, and where surprises are most likely. Below, each term is
+            explained in plain language, with a note on where to spot it on the
+            main dashboard.
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # ── 5 Core Terms ─────────────────────────────────────────────────────────
+    # ── 5 Core Terms — 2-column progressive-disclosure cards ─────────────────
     TERMS = [
         {
             "icon":     "📊",
-            "term":     "Elo Rating & Elo Differential",
-            "snapshot": "A team's strength score, and the gap between two opponents.",
+            "term":     "Elo Rating & Elo Diff",
+            "snapshot": "The strength score behind every team, and the gap between two opponents.",
             "detail":   (
-                "<strong>Elo Rating</strong> is a numerical measure of team strength. "
-                "It rises after a win and falls after a loss, scaled by the quality of the opponent. "
-                "<br><br>"
-                "<strong>Elo Differential</strong> = Home team Elo − Away team Elo. "
-                "A large positive differential signals a clear favourite; a value near zero means "
-                "the model rates both sides roughly equal. "
-                "The differential is the input used to calculate all three outcome probabilities. "
-                "<br><br>"
-                "📐 <em>Formula (expected score / home-win probability):</em><br>"
-                "<code>P(home win) = 1 / (1 + 10^(−ΔElo / 400))</code>"
+                "An Elo-based probability, also known as the expected score, is the statistical likelihood that one competitor will defeat another based on the difference between their ratings."
+                "An Elo rating goes up when a team wins and down when they lose. "
+                "The Elo Diff is simply the home team's rating minus the away team's rating. "
+                "A large positive diff means a clear favourite; a diff near zero means the model "
+                "sees two equals. On the dashboard, this isn't shown directly — but it's the "
+                "invisible engine that generates all the win/draw/loss probabilities you see in "
+                "the match detail table."
             ),
-            "where":    "The raw Elo Differential column appears in the Group Fixture Table at the bottom of the main dashboard.",
-            "accent":   C_LIME,
+            "where":    "You'll find the raw Elo Diff column in the Group Match Table at the bottom of the main dashboard.",
+            "accent":   C_TEAL,
         },
         {
             "icon":     "🎯",
-            "term":     "Win, Draw & Away-Win Probability",
-            "snapshot": "The model's estimated likelihood for each of the three possible match outcomes — always summing to 100%.",
+            "term":     "Win, Draw & Away Probabilities",
+            "snapshot": "The model's best guess at how a match will end — always adding to 100%.",
             "detail":   (
-                "These three probabilities are derived from the Elo differential using a logistic transformation. "
-                "Together they always sum to 1 (100%). "
-                "<br><br>"
-                "• <strong>Home Win Prob.</strong> — likelihood the home side wins in 90 minutes.<br>"
-                "• <strong>Draw Prob.</strong> — likelihood neither side wins.<br>"
-                "• <strong>Away Win Prob.</strong> — likelihood the away side wins.<br><br>"
-                "A high draw probability flags a group where points are frequently shared. "
-                "A high away-win probability signals fixtures where the road side has a genuine chance, "
-                "often because the talent gap overrides home advantage."
+                "These three numbers are the building blocks of the entire tournament forecast. "
+                "A high Draw probability flags a group where points are constantly shared. "
+                "A high Away Win probability signals matches where the underdog has a real chance. "
+                "You can explore them for every single match using the sidebar selectors on the main dashboard."
             ),
-            "where":    "Visible in the Match Probability Breakdown gauges and bars, and in the Group Fixture Table.",
-            "accent":   C_BLUE,
+            "where":    "Visible in the Match Inspector gauges and progress bars, and in the Group Match Table.",
+            "accent":   C_GREEN,
         },
         {
             "icon":     "🎲",
-            "term":     "Upset Index",
-            "snapshot": "How evenly spread the odds are. A higher score means no single outcome dominates.",
+            "term":     "Expected Upset Rate",
+            "snapshot": "How evenly the odds are split. A high score means no single outcome dominates.",
             "detail":   (
-                "The Upset Index measures outcome uncertainty for a single fixture or a group average. "
-                "<br><br>"
-                "📐 <em>Formula:</em><br>"
-                "<code>Upset Index = 1 − max(home_win_prob, draw_prob, away_win_prob)</code><br><br>"
-                "If the favourite carries a 70% win probability, the Upset Index is 30%. "
-                "If no outcome exceeds 40%, the index climbs above 60% — signalling maximum unpredictability. "
-                "The group with the highest <em>mean</em> Upset Index is statistically the hardest to forecast."
+                "Expected Upset Rate = 1 – the single most likely result. "
+                "If the favourite is a 60% lock, the upset potential is 40%. "
+                "The match with the highest upset potential is the one where the model is basically shrugging. "
+                "On the main dashboard, this is the core story of the 'Upset Potential by Group' bar chart — "
+                "the group with the tallest bar is where chaos is most likely to strike."
             ),
-            "where":    "See the 'Upset Index by Group' bar chart and the 'Highest Upset Index Group' KPI card.",
-            "accent":   C_CRIMSON,
+            "where":    "See the 'Upset Potential by Group' bar chart and the 'Most Unpredictable Group' KPI card.",
+            "accent":   C_RED,
         },
         {
             "icon":     "🔄",
-            "term":     "Competitive Balance Index",
-            "snapshot": "How evenly matched a whole group is — a higher score means fewer easy games.",
+            "term":     "Within-Group Competitive Parity",
+            "snapshot": "How evenly matched a whole group is — a low score means no easy games.",
             "detail":   (
-                "The Competitive Balance Index captures the spread of home-win probabilities within a group. "
-                "If all fixtures in a group have similar home-win probabilities, the standard deviation is low "
-                "and the balance score is high — meaning no team is a runaway favourite. "
-                "<br><br>"
-                "📐 <em>Formula:</em><br>"
-                "<code>Competitive Balance Index = 1 − σ(home_win_prob)</code><br>"
-                "where σ is the standard deviation of home-win probabilities across all fixtures in the group.<br><br>"
-                "The group with the highest index is the statistical 'Group of Death' — every fixture is genuinely open."
+                "This is calculated as 1 minus the standard deviation of home-win probabilities inside a group. "
+                "The lower the standard deviation, the more level the playing field. "
+                "The 'Where the Uncertainty Lives' chart on the main dashboard ranks every group from most "
+                "to least balanced. The group at the top is the statistical 'High Average Strength Group' — where every "
+                "match could genuinely go either way."
             ),
-            "where":    "See the 'Competitive Balance Index by Group' horizontal bar chart on the main dashboard.",
-            "accent":   C_BLUE,
+            "where":    "See the 'Where the Uncertainty Lives' horizontal bar chart on the main dashboard.",
+            "accent":   C_GREEN,
         },
         {
             "icon":     "🐶",
-            "term":     "Away-Favoured Group",
-            "snapshot": "The group where away sides win more often than the tournament average.",
+            "term":     "Lower-Tier Win Probability Share",
+            "snapshot": "A group where the away team (the underdog)wins more often than expected",
             "detail":   (
-                "This metric highlights the group with the highest <strong>mean away-win probability</strong> "
-                "across all its fixtures. "
-                "<br><br>"
-                "📐 <em>Formula:</em><br>"
-                "<code>Away-Win Mean (group) = Σ away_win_prob / n</code><br>"
-                "where n = number of fixtures in the group.<br><br>"
-                "When away sides carry elevated win probabilities, it typically means the talent differential "
-                "between teams in that group overrides any home-advantage effect — or simply that the "
-                "group contains few dominant home favourites."
+                "This highlights the group with the highest average Away Win probability — a direct signal "
+                "that favourites don't have it easy. It's a simple but telling number: if away sides are "
+                "winning at an elevated rate, the traditional home advantage is being overridden by talent gaps. "
+                "Or, more interestingly, by the absence of them."
             ),
-            "where":    "The 'Away-Favoured Group' KPI card and the narrative summary at the top of the main dashboard.",
-            "accent":   C_LIME,
+            "where":    "The 'Away-Favoured Group' KPI card and the narrative summary at the top of the main dashboard both surface this group directly.",
+            "accent":   C_TEAL,
         },
     ]
 
+    # Render in a 2-column grid
     col_a, col_b = st.columns(2, gap="large")
-    columns_cycle = [col_a, col_b, col_a, col_b, col_a]
+    columns_cycle = [col_a, col_b, col_a, col_b, col_a]   # 5 cards, last in left col
 
     for idx, term in enumerate(TERMS):
         with columns_cycle[idx]:
+            # Card shell
             st.markdown(
                 f"""
                 <div style="
@@ -957,12 +927,13 @@ with tab2:
                     <p style="font-size:1.6rem;margin:0 0 6px 0;">{term['icon']}</p>
                     <p style="color:{C_WHITE};font-size:1.0rem;font-weight:700;
                               margin:0 0 6px 0;">{term['term']}</p>
-                    <p style="color:{C_LIME};font-size:0.88rem;font-style:italic;
+                    <p style="color:{C_TEAL};font-size:0.88rem;font-style:italic;
                               margin:0 0 10px 0;line-height:1.45;">{term['snapshot']}</p>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+            # Expander (sits outside card div, directly below)
             with st.expander("Learn more →"):
                 st.markdown(
                     f"<p style='color:{C_TEXT};font-size:0.9rem;line-height:1.65;'>"
@@ -975,7 +946,7 @@ with tab2:
 
     st.divider()
 
-    # ── Model Limitations note ────────────────────────────────────────────────
+    # ── Section 2 — Limitations note ─────────────────────────────────────────
     st.markdown(
         f"""
         <div style="
@@ -984,33 +955,32 @@ with tab2:
             padding:22px 26px;
             background:{C_GLASS_BG};
             border:1px solid {C_GLASS_BD};
-            border-left:4px solid {C_SUBTEXT};
+            border-left:4px solid {C_MINT};
             border-radius:0 14px 14px 0;
             box-shadow:{C_GLASS_SHA};
             backdrop-filter:blur(12px);
         ">
             <p style="color:{C_WHITE};font-size:0.95rem;font-weight:700;margin:0 0 8px 0;">
-                Model scope and limitations.
+                Where the model stops, and the real world begins.
             </p>
             <p style="color:{C_TEXT};font-size:0.9rem;line-height:1.65;margin:0;">
-                These probabilities are generated by a pure Elo-based model. The model does not
-                incorporate in-tournament form, squad injuries, tactical matchups, or the logistical
-                demands of a three-host-nation tournament. Treat this dashboard as a structural
-                baseline for tournament uncertainty — contextual factors will always introduce
-                variance that a rating-only model cannot anticipate.
+                These probabilities are built from a pure Elo‑based model — they don't yet factor
+                in squad form, injuries, tactical match‑ups, or travel demands across three host nations.
+                Think of this dashboard as the structural layer of tournament uncertainty.
+                The real world always adds its own chaos.
             </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # ── Footer ────────────────────────────────────────────────────────────────
+    # ── Footer note ───────────────────────────────────────────────────────────
     st.markdown(
         f"""
         <div style="text-align:center;padding-top:8px;">
-            <p style="color:{C_LIME};font-size:0.78rem;font-style:italic;margin:0;">
-                Win probabilities derived from a public Elo-based model (emath).
-                All figures represent statistical likelihoods, not guarantees.
+            <p style="color:{C_TEAL};font-size:0.78rem;font-style:italic;margin:0;">
+                Probabilities are derived from a public Elo-based model.
+                They represent likelihoods and probabilities by emath.
             </p>
         </div>
         """,
